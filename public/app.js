@@ -334,6 +334,40 @@ function renderTags(tags) {
   }
 }
 
+// ----- mobile sidebar toggle -----
+const sidebarEl = document.querySelector(".sidebar");
+const sidebarBackdrop = $("#sidebar-backdrop");
+const hamburger = $("#sidebar-toggle");
+
+function openSidebar() {
+  sidebarEl.classList.add("show");
+  sidebarBackdrop.classList.add("show");
+  hamburger.classList.add("is-open");
+  hamburger.setAttribute("aria-label", "Close menu");
+}
+
+function closeSidebar() {
+  sidebarEl.classList.remove("show");
+  sidebarBackdrop.classList.remove("show");
+  hamburger.classList.remove("is-open");
+  hamburger.setAttribute("aria-label", "Open menu");
+}
+
+function toggleSidebar() {
+  sidebarEl.classList.contains("show") ? closeSidebar() : openSidebar();
+}
+
+hamburger.addEventListener("click", toggleSidebar);
+sidebarBackdrop.addEventListener("click", closeSidebar);
+
+// Close sidebar after picking a note on mobile (better UX than leaving it open)
+sidebarEl.addEventListener("click", (e) => {
+  // Only close if the click was on a note item, not the sidebar chrome
+  if (e.target.closest(".note-item") && window.innerWidth <= 720) {
+    closeSidebar();
+  }
+});
+
 // ----- new note -----
 $("#new-note-btn").addEventListener("click", async () => {
   try {
@@ -350,6 +384,11 @@ $("#new-note-btn").addEventListener("click", async () => {
   } catch (err) {
     toast(err.message, true);
   }
+});
+
+$("#mobile-new-note").addEventListener("click", () => {
+  closeSidebar();
+  $("#new-note-btn").click();
 });
 
 // ----- autosave -----
@@ -506,6 +545,7 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     $("#share-modal").classList.add("hidden");
     $("#about-modal").classList.add("hidden");
+    if (window.innerWidth <= 720) closeSidebar();
   }
 });
 

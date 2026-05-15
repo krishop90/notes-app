@@ -45,6 +45,17 @@
 
   <!-- ============ APP VIEW ============ -->
   <main id="app-view" class="app-view hidden">
+    
+    <header class="mobile-bar">
+  <button class="hamburger" id="sidebar-toggle" aria-label="Open menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <h1 class="brand-sm mobile-brand">EpiNote<span class="brand-dot">.</span></h1>
+  <button class="icon-btn icon-btn-sm" id="mobile-new-note" title="New note" aria-label="New note">+</button>
+</header>
+
     <aside class="sidebar">
       <div class="sidebar-head">
         <h1 class="brand-sm">EpiNotes<span class="brand-dot">.</span></h1>
@@ -67,6 +78,8 @@
       </div>
 
     </aside>
+    
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
     <section class="editor-wrap">
       <div id="editor-empty" class="editor-empty">
