@@ -5,14 +5,14 @@ A simple notes app where users can:
 - Register and login
 - Create, update, and delete notes
 - Share notes with other users
-- Generate AI summaries and tags using Gemini AI
+- Generate AI summaries and tags using Groq AI
 
 Built with:
 - Node.js
 - Express.js
 - Supabase PostgreSQL
 - JWT Authentication
-- Gemini AI
+- Groq AI
 
 ---
 
@@ -191,7 +191,7 @@ npm install
 ```env
 DATABASE_URL=your_database_url
 JWT_SECRET=your_secret_key
-GEMINI_API_KEY=your_gemini_api_key
+Groq_API_KEY=your_Groq_api_key
 ```
 
 ---
