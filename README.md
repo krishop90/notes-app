@@ -1,131 +1,276 @@
 # EpiNotes — Notes App
 
-A multi-user notes backend (with a small SPA frontend) for the Engineering Internship assignment.
+A simple notes app where users can:
 
-Built with **Node.js + Express**, **Supabase Postgres**, **JWT auth**, and **Google Gemini** for the custom AI feature.
+- Register and login
+- Create, update, and delete notes
+- Share notes with other users
+- Generate AI summaries and tags using Gemini AI
 
----
-
-## Custom feature: AI summary + auto-tags
-
-- On `POST /notes`, the server asks Gemini for 3–5 topical tags and persists them with the note.
-- `POST /notes/{id}/summarize` returns a 2–4 sentence summary, cached by a SHA-256 hash of `title+content` so re-running on an unchanged note is free (and skips a token spend). Pass `?refresh=true` to force regeneration.
-- `GET /notes/{id}/tags` returns the persisted tags.
-- If `GEMINI_API_KEY` is not set, AI endpoints return `503` but the rest of the app works fine.
-
-Why this feature: note apps quietly become unsearchable junk drawers. Auto-tags give the corpus structure as it grows, and on-demand summaries let you triage long notes without reading them. Fits the "Engineering Intelligence" direction the team mentioned.
-
----
-
-## Endpoints
-
-| Method | Path                       | Auth | Description                                |
-|--------|----------------------------|------|--------------------------------------------|
-| POST   | `/register`                | —    | Create a new user                          |
-| POST   | `/login`                   | —    | Get a JWT                                  |
-| GET    | `/notes`                   | ✓    | List notes (owned + shared with you)       |
-| GET    | `/notes/:id`               | ✓    | Get one note                               |
-| POST   | `/notes`                   | ✓    | Create note (auto-tagged via AI)           |
-| PUT    | `/notes/:id`               | ✓    | Update note (owner only)                   |
-| DELETE | `/notes/:id`               | ✓    | Delete note (owner only)                   |
-| POST   | `/notes/:id/share`         | ✓    | Share with another user by email           |
-| POST   | `/notes/:id/summarize`     | ✓    | **CUSTOM**: AI summary, cached             |
-| GET    | `/notes/:id/tags`          | ✓    | **CUSTOM**: list tags on a note            |
-| GET    | `/openapi.json`            | —    | gemini 2.5  spec                           |
-| GET    | `/about`                   | —    | Author + features                          |
-| GET    | `/health`                  | —    | Health check                               |
-| GET    | `/`                        | —    | Frontend SPA                               |
+Built with:
+- Node.js
+- Express.js
+- Supabase PostgreSQL
+- JWT Authentication
+- Gemini AI
 
 ---
 
-## Local setup
+# Features
+
+- User Authentication
+- CRUD Notes API
+- Share Notes
+- AI-generated Tags
+- AI-generated Summaries
+- JWT-based Authentication
+- Password Hashing with bcrypt
+- Rate Limiting
+- Secure SQL Queries
+
+---
+
+# API Endpoints
+
+## Authentication
+
+### Register
+```http
+POST /register
+```
+
+Request:
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+---
+
+### Login
+```http
+POST /login
+```
+
+Request:
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+Response:
+```json
+{
+  "access_token": "JWT_TOKEN"
+}
+```
+
+---
+
+# Notes
+
+## Get All Notes
+```http
+GET /notes
+```
+
+Headers:
+```http
+Authorization: Bearer TOKEN
+```
+
+---
+
+## Get Single Note
+```http
+GET /notes/:id
+```
+
+---
+
+## Create Note
+```http
+POST /notes
+```
+
+Request:
+```json
+{
+  "title": "My Note",
+  "content": "This is note content"
+}
+```
+
+Automatically generates AI tags.
+
+---
+
+## Update Note
+```http
+PUT /notes/:id
+```
+
+---
+
+## Delete Note
+```http
+DELETE /notes/:id
+```
+
+---
+
+# Share Notes
+
+## Share Note
+```http
+POST /notes/:id/share
+```
+
+Request:
+```json
+{
+  "email": "friend@example.com"
+}
+```
+
+---
+
+# AI Features
+
+## Generate Summary
+```http
+POST /notes/:id/summarize
+```
+
+Force refresh:
+```http
+POST /notes/:id/summarize?refresh=true
+```
+
+---
+
+## Get Tags
+```http
+GET /notes/:id/tags
+```
+
+---
+
+# Other Routes
+
+## Health Check
+```http
+GET /health
+```
+
+---
+
+## About
+```http
+GET /about
+```
+
+---
+
+# Project Setup
+
+## 1. Install Dependencies
 
 ```bash
-# 1. Install
 npm install
+```
 
-# 2. Configure env
-cp .env.example .env
-# Fill in DATABASE_URL, JWT_SECRET (openssl rand -hex 32), optional GEMINI_API_KEY
+---
 
-# 3. Create the schema in Supabase
-#    Dashboard -> SQL Editor -> New query -> paste schema.sql -> Run
+## 2. Create .env File
 
-# 4. Start
+```env
+DATABASE_URL=your_database_url
+JWT_SECRET=your_secret_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+---
+
+## 3. Setup Database
+
+Run the SQL from:
+
+```txt
+schema.sql
+```
+
+inside Supabase SQL Editor.
+
+---
+
+## 4. Start Server
+
+Development:
+```bash
 npm run dev
-# Server on http://localhost:3000 (also serves the frontend)
+```
+
+Production:
+```bash
+npm start
+```
+
+Server runs on:
+
+```txt
+http://localhost:3000
 ```
 
 ---
 
-## Deploying to Render
+# Folder Structure
 
-1. Push this project to a GitHub repo.
-2. In Render: **New → Blueprint** → connect the repo. The included `render.yaml` provisions the service.
-3. When prompted, paste:
-   - `DATABASE_URL` — your Supabase pooled connection string (with the real password)
-   - `GEMINI_API_KEY` — your Gemini key (or leave blank to disable AI)
-   - `OWNER_NAME` — your name (for `/about`)
-   - `OWNER_EMAIL` — your email (for `/about`)
-4. `JWT_SECRET` is auto-generated by Render.
-5. Wait for the build; copy the URL Render gives you (e.g. `https://notes-app-xxxx.onrender.com`). That's your submission URL.
+```txt
+src/
+ ├── routes/
+ ├── middleware/
+ ├── db.js
+ ├── llm.js
+ └── server.js
 
-> **Note on Render's free tier:** services sleep after 15 min idle and cold-start in ~30s. The first request the graders hit may time out. If you're worried, deploy to **Railway** (free $5 trial credit, no sleep) or **Fly.io** instead — same files work.
-
-### Railway
-
-```bash
-# Install the CLI: https://docs.railway.com/guides/cli
-railway login
-railway init
-railway up
-# Then set the env vars in the Railway dashboard.
+public/
+schema.sql
 ```
 
-### Fly.io
-
-
 ---
 
-## Security notes
+# Quick Test
 
-- Passwords hashed with **bcrypt** (cost 10).
-- JWT signed with HS256; secret comes from env, never hardcoded.
-- All SQL goes through **parameterized queries** (no string interpolation).
-- Postgres `gen_random_uuid()` for primary keys (no enumerable integer IDs).
-- Login responses are generic (`401 Invalid email or password`) so an attacker can't probe valid emails.
-- Rate limit of 20 requests / 15 min on `/login` and `/register` per IP.
-- Body size capped at 256 KB; note content capped at 50,000 chars.
-- Ownership checked on every write; read access checked via owner OR `note_shares`.
-
----
-
-## Architecture in one sentence
-
-`server.js` boots Express → mounts route files in `src/routes` → each route uses `src/db.js` (pg pool) and `src/llm.js` (Gemini) → JWT auth via `src/middleware/auth.js` → static SPA served from `public/`.
-
----
-
-## Try it locally
+## Register User
 
 ```bash
-# Register
 curl -X POST http://localhost:3000/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"a@b.com","password":"password123"}'
+-H "Content-Type: application/json" \
+-d '{"email":"test@test.com","password":"123456"}'
+```
 
-# Login
-TOKEN=$(curl -s -X POST http://localhost:3000/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"a@b.com","password":"password123"}' | jq -r .access_token)
+---
 
-# Create note
+## Login User
+
+```bash
+curl -X POST http://localhost:3000/login \
+-H "Content-Type: application/json" \
+-d '{"email":"test@test.com","password":"123456"}'
+```
+
+---
+
+## Create Note
+
+```bash
 curl -X POST http://localhost:3000/notes \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Q3 plan","content":"Hire two engineers, ship the agents demo, finalize pricing."}'
-
-# Summarize
-curl -X POST http://localhost:3000/notes/<NOTE_ID>/summarize \
-  -H "Authorization: Bearer $TOKEN"
+-H "Authorization: Bearer TOKEN" \
+-H "Content-Type: application/json" \
+-d '{"title":"Test","content":"Hello world"}'
 ```
