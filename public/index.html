@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EpiNotes · Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- ============ AUTH VIEW ============ -->
+  <main id="auth-view" class="auth-view">
+    <div class="auth-card">
+      <header class="auth-header">
+        <h1 class="brand">EpiNotes<span class="brand-dot">.</span></h1>
+        <p class="tagline">A quieter place for your notes.</p>
+      </header>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Sign in</button>
+        <button class="tab" data-tab="register">Create account</button>
+      </div>
+
+      <form id="auth-form" class="auth-form" autocomplete="on">
+        <label class="field">
+          <span class="field-label">Email</span>
+          <input type="email" name="email" required autocomplete="email" />
+        </label>
+        <label class="field">
+          <span class="field-label">Password</span>
+          <input type="password" name="password" required minlength="8" autocomplete="current-password" />
+          <span class="hint" id="pw-hint">Minimum 8 characters.</span>
+        </label>
+        <button type="submit" class="btn-primary" id="auth-submit">Sign in</button>
+        <p class="auth-message" id="auth-message"></p>
+      </form>
+    </div>
+
+    <footer class="auth-footer">
+      <span>built for the engg. assignment</span>
+    </footer>
+  </main>
+
+  <!-- ============ APP VIEW ============ -->
+  <main id="app-view" class="app-view hidden">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <h1 class="brand-sm">EpiNotes<span class="brand-dot">.</span></h1>
+        <button class="icon-btn" id="new-note-btn" title="New note" aria-label="New note">+</button>
+      </div>
+
+      <div class="user-strip">
+        <span class="user-email" id="user-email"></span>
+        <button class="link-btn" id="logout-btn">sign out</button>
+      </div>
+      
+      <ul class="note-list" id="note-list"></ul>
+      <div class="empty-state" id="empty-list" hidden>
+        <p>No notes yet.</p>
+        <p class="muted">Press <kbd>+</kbd> to begin.</p>
+      </div>
+
+      <div class="sidebar-foot">
+        <button class="link-btn about-link" id="about-link">about this project</button>
+      </div>
+
+    </aside>
+
+    <section class="editor-wrap">
+      <div id="editor-empty" class="editor-empty">
+        <p class="editor-empty-title">Select a note</p>
+        <p class="editor-empty-sub">or create a new one from the sidebar.</p>
+      </div>
+
+      <article id="editor" class="editor hidden">
+        <header class="editor-toolbar">
+          <div class="meta" id="note-meta"></div>
+          <div class="toolbar-actions">
+            <button class="btn-ghost" id="share-btn">Share</button>
+            <button class="btn-ghost" id="summarize-btn">✦ Summarize</button>
+            <button class="btn-ghost danger" id="delete-btn">Delete</button>
+          </div>
+        </header>
+
+        <input class="editor-title" id="editor-title" placeholder="Title" maxlength="200" />
+        <div class="tags-row-wrap">
+        <div class="tags-row" id="tags-row"></div>
+          <button class="link-btn retag-btn" id="retag-btn" title="Regenerate AI tags">↻ retag</button>
+        </div>              
+        <textarea class="editor-content" id="editor-content" placeholder="Begin writing..."></textarea>
+
+        <aside class="summary-panel hidden" id="summary-panel">
+          <header>
+            <span class="summary-label">✦ Summary</span>
+            <button class="link-btn" id="summary-close">close</button>
+          </header>
+          <p id="summary-text"></p>
+          <footer id="summary-meta"></footer>
+        </aside>
+
+        <footer class="editor-footer">
+          <span class="save-status" id="save-status">Saved</span>
+          <span class="dot-sep">·</span>
+          <span id="shared-banner" class="shared-banner hidden">
+            <span class="shared-banner-label">shared by</span>
+            <span id="shared-banner-email"></span>
+          </span>
+        </footer>
+      </article>
+    </section>
+  </main>
+
+  <!-- ============ SHARE MODAL ============ -->
+  <div class="modal-backdrop hidden" id="share-modal">
+    <div class="modal">
+      <h2>Share this note</h2>
+      <p class="muted">The recipient will be able to read this note from their account.</p>
+      <form id="share-form">
+        <label class="field">
+          <span class="field-label">Their email</span>
+          <input type="email" name="share_with_email" required />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" id="share-cancel">Cancel</button>
+          <button type="submit" class="btn-primary">Share</button>
+        </div>
+        <p class="auth-message" id="share-message"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ ABOUT MODAL ============ -->
+  <div class="modal-backdrop hidden" id="about-modal">
+    <div class="modal about-modal">
+      <header class="about-header">
+        <h2>About</h2>
+        <button class="link-btn" id="about-close">close</button>
+      </header>
+      <div id="about-body">
+        <p class="muted">Loading…</p>
+      </div>
+      <footer class="about-footer">
+        <span class="mono-small">GET /about · GET /openapi.json</span>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
