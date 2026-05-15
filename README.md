@@ -176,13 +176,6 @@ GET /about
 
 ---
 
-## OpenAPI Spec
-```http
-GET /openapi.json
-```
-
----
-
 # Project Setup
 
 ## 1. Install Dependencies
